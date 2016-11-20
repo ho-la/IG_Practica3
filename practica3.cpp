@@ -16,32 +16,24 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <stdio.h>
-
+//Funciones de opengl
 void initFunc();
 void funReshape(int w, int h);
 void funDisplay();
-void drawTriangulo(char color);
 void funKeyboard(int key, int x, int y);
 void destroyFunc();
-
-void drawOurNumber();
+//Funciones de creacion de objetos
+void drawTriangulo(char color);
 void glDrawSphere(char color,float radio);
-//Práctica1
-void P1tarea1();
-void P1tarea2();
-void P1tarea3();
-void P1drawPieza();
-//Práctica2
-void P2Tarea1();
-void P2Tarea2();
-void P2Tarea3();
-void P2Tarea4();
-//Practica 3
-void P3Tarea1();
 void drawCube();
 void drawRoom();
 void drawLights();
 void drawObject(GLfloat s, GLint c);
+
+//Practica 3
+void P3Tarea1();
+void P3Tarea2();
+void P3Tarea3();
 // Variables globales
 int w = 800;
 int h = 500;
@@ -50,10 +42,10 @@ GLfloat rotY =  0.0f;
 GLfloat rotX = 0.0f;
 GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 GLfloat PL1[] = {-2.0f, 1.0f,-4.0f, 1.0f };
-//Si gira de 1h en 1h
-GLfloat anio = (360.0/365.0)/24; //365*24 horas
-GLfloat dia = (360.0/24.0); //24 horas
-GLfloat mes= anio*12;  // Luna gira 12 veces sobre a Tierra en un año
+//Si gira de 4h en 4h
+GLfloat anio = (360.0/365.0)/6; //365*24 horas
+GLfloat dia = (360.0/6.0); //24 horas
+GLfloat mes= anio*12;  // Luna gira 12 veces sobre la Tierra en un año
 
 GLfloat RAnio = 0.0f;
 GLfloat RDia = 0.0f;
@@ -95,7 +87,6 @@ int main(int argc, char** argv) {
     
     return(0);
 }
-
 
 void initFunc() {
     
@@ -272,28 +263,7 @@ void funKeyboard(int key, int x, int y) {
     glutPostRedisplay();
     
 }
-/****************************************************************************************************/
-//Our number is 9
-void drawOurNumber() { 
-    glBegin(GL_LINE_LOOP);
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glVertex3f(0.0f, 3.0f, 0.0f); // v1
-        glVertex3f( 3.0f, 3.0f, 0.0f); // v2
-        glVertex3f(3.0f, -2.0f, 0.0f); // v12
-        glVertex3f(0.0f, -2.0f, 0.0f); // v11
-        glVertex3f(0.0f, -1.0f, 0.0f); // v9
-        glVertex3f(2.0f, -1.0f, 0.0f); // v10
-        glVertex3f(2.0f, 0.0f, 0.0f); // v8
-        glVertex3f(0.0f, 0.0f, 0.0f); // v7   
-    glEnd();
-    glBegin(GL_LINE_LOOP);
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glVertex3f( 1.0f,  2.0f, 0.0f); // v3
-        glVertex3f(2.0f, 2.0f, 0.0f); // v4
-        glVertex3f(2.0f, 1.0f, 0.0f); // v6
-        glVertex3f(1.0f, 1.0f, 0.0f); // v5
-    glEnd();
-}
+
 void glDrawSphere(char color,float radio){
     switch(color) {
         //White
@@ -323,76 +293,12 @@ void glDrawSphere(char color,float radio){
     glutWireSphere(radio,20,20); 
     //(GLdouble radius,GLint slices, GLint stacks); (number of lines)
 }
-void P1tarea1(){
-    //Dibuja nuestro número
-    glPushMatrix(); 
-        //Grosor de las rayas
-        glLineWidth(5.0);
-        //Ajuste
-        glScalef(0.3f, 0.3f, 0.3f);
-        glTranslatef( -1.5f, -0.5f, 0.0f);
-        drawOurNumber();
-    glPopMatrix();
-    //Dibuja esfera amarilla
-    glPushMatrix();
-        glLineWidth(1.0);
-        glRotatef(50,0.0f,1.0f,0.0f);
-        glDrawSphere('y',2.0f);
-    glPopMatrix();
+
+void P3Tarea1() {
     
-    glRotatef(RAnio,0.0f,1.0f,0.0f);
 }
-void P1tarea2(){
-    //Dbujamos el sol y el número
-    P1tarea1();
-    glPushMatrix(); 
-        glLineWidth(1.0);
-        glTranslatef(4.0f, 0.0f, 0.0f);
-        //glRotatef(rotY,0.0f,1.0f,0.0f);
-        glRotatef(RMes,0.0f,1.0f,0.0f);
-        //Dibujamos la Tierra
-        glPushMatrix();    
-            glRotatef(RDia,0.0f,1.0f,0.0f);
-            glDrawSphere('b',0.5f);
-        glPopMatrix(); 
-            glLineWidth(1.0);
-            glTranslatef(1.5f, 0.0f, 0.0f);
-        glPushMatrix();    
-            //Dibujamos la luna
-            glDrawSphere('w',0.1f);
-        glPopMatrix();
-    glPopMatrix();
-}
-void P1tarea3(){
-    glPushMatrix();
-        P1drawPieza();
-    glPopMatrix();
-    glPushMatrix();
-        glTranslatef(0.5f, 3.5f, 0.0f);
-        glRotatef(-90,0.0f,0.0f,1.0f);
-        P1drawPieza();
-    glPopMatrix();
-    glPushMatrix();
-        glTranslatef(1.0f, 1.5f, 0.0f);
-        glRotatef(-90,0.0f,0.0f,1.0f);
-        P1drawPieza();
-    glPopMatrix();
-    glPushMatrix();
-        glTranslatef(3.0f, 0.0f, 0.0f);
-        P1drawPieza();
-    glPopMatrix();
-}
-void P1drawPieza(){
-    glColor3f(1.0, 1.0, 1.0);
-    glBegin(GL_QUADS);
-        glVertex3f( 0.0, 0.0, 0.0);
-        glVertex3f( 1.0, 0.0, 0.0);        
-        glVertex3f( 1.0, 3.0, 0.0);
-        glVertex3f( 0.0, 3.0, 0.0);
-    glEnd();
-}
-void P2Tarea1(){
-    glPushMatrix();
+void P3Tarea2() {
+     glPushMatrix();
         //Dibujar sol
         glPushMatrix();
             glRotatef(90,1.0f,0.0f,0.0f);
@@ -418,66 +324,7 @@ void P2Tarea1(){
         //incrementar variables
     glPopMatrix();
 }
-void P2Tarea2(){
-    glPushMatrix();
-        //Dibujar sol
-        glPushMatrix();
-            glRotatef(90,1.0f,0.0f,0.0f);
-            glDrawSphere('y',2.0f);
-        glPopMatrix();
-        //Dibujar tierra
-        glRotatef(-30,0.0f,0.0f,1.0f);
-        glRotatef(RAnio,0.0f,1.0f,0.0f);
-        glTranslatef(4.0f,0.0f,0.0f);
-        glRotatef(RDia,0.0f,1.0f,0.0f);
-        glPushMatrix();
-            glRotatef(90,1.0f,0.0f,0.0f);
-            glDrawSphere('b',0.5f);
-        glPopMatrix();
-        glRotatef(-RDia,0.0f,1.0f,0.0f);
-        //Dibujar luna
-        glRotatef(45,0.0f,0.0f,1.0f);
-        glRotatef(RMes,0.0f,1.0f,0.0f);
-        glTranslatef(1.5,0.0,0.0);
-        glPushMatrix();
-            glRotatef(90,1.0f,0.0f,0.0f);
-            glDrawSphere('w',0.1f);
-        glPopMatrix();
-    glPopMatrix();
-}
-void P2Tarea3(){
-    
-}
-void P2Tarea4(){
-    glPushMatrix();
-        glTranslatef(2.5f,0.0f,0.0f);
-        glRotatef(T4Girar,0.0f,0.0f,1.0f);
-        glRotatef(-90,0.0f,0.0f,1.0f);
-        glPushMatrix();
-            glTranslatef(-0.5f,-0.5f,0.0f);
-            glColor3f(1.0f, 0.0f, 1.0f);
-            P1drawPieza();
-        glPopMatrix();
-        glPushMatrix();
-            glRotatef(90,0.0f,0.0f,1.0f);
-            glTranslatef(T4Dezplazar,0.0f,0.0f);
-            glTranslatef(2.5f,0.25f,0.0f);
-            glScalef(0.5f,0.5f,1.0f);
-            glRotatef(-90,0.0f,0.0f,1.0f);
-            glColor3f(0.0f, 1.0f, 0.0f);
-            P1drawPieza();
-        glPopMatrix();
-    glPopMatrix();
-    glPushMatrix();
-        glTranslatef(-0.5f,0.5f,0.0f);
-        glRotatef(-90,0.0f,0.0f,1.0f);
-        glColor3f(0.0f, 0.0f, 1.0f);
-        P1drawPieza();
-    glPopMatrix();
-    esTarea4=true;
-}
-
-void P3Tarea1() {
+void P3Tarea3() {
     
 }
 
