@@ -595,10 +595,10 @@ void drawRoom() {
      // PARED DEL FONDO (z = -1)
         glBegin(GL_QUADS);
             glNormal3f( 0.0f,  0.0f,  1.0f);
-            glVertex3f(-1.0f, -1.0f, -1.0f);
-            glVertex3f( 1.0f, -1.0f, -1.0f);
-            glVertex3f( 1.0f,  1.0f, -1.0f);
-            glVertex3f(-1.0f,  1.0f, -1.0f);
+            glVertex3f(-1.0f, -1.0f, -0.8f);
+            glVertex3f( 1.0f, -1.0f, -0.8f);
+            glVertex3f( 1.0f,  1.0f, -0.8f);
+            glVertex3f(-1.0f,  1.0f, -0.8f);
         glEnd();
  
      // PARED DERECHA (x = 1)
