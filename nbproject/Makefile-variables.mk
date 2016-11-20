@@ -9,16 +9,16 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=MinGW-Windows
 CND_ARTIFACT_DIR_Debug=dist/Debug/MinGW-Windows
-CND_ARTIFACT_NAME_Debug=igpractica3
-CND_ARTIFACT_PATH_Debug=dist/Debug/MinGW-Windows/igpractica3
+CND_ARTIFACT_NAME_Debug=ig_practica3
+CND_ARTIFACT_PATH_Debug=dist/Debug/MinGW-Windows/ig_practica3
 CND_PACKAGE_DIR_Debug=dist/Debug/MinGW-Windows/package
 CND_PACKAGE_NAME_Debug=igpractica3.tar
 CND_PACKAGE_PATH_Debug=dist/Debug/MinGW-Windows/package/igpractica3.tar
 # Release configuration
 CND_PLATFORM_Release=MinGW-Windows
 CND_ARTIFACT_DIR_Release=dist/Release/MinGW-Windows
-CND_ARTIFACT_NAME_Release=igpractica3
-CND_ARTIFACT_PATH_Release=dist/Release/MinGW-Windows/igpractica3
+CND_ARTIFACT_NAME_Release=ig_practica3
+CND_ARTIFACT_PATH_Release=dist/Release/MinGW-Windows/ig_practica3
 CND_PACKAGE_DIR_Release=dist/Release/MinGW-Windows/package
 CND_PACKAGE_NAME_Release=igpractica3.tar
 CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/igpractica3.tar

@@ -36,12 +36,20 @@ void P2Tarea1();
 void P2Tarea2();
 void P2Tarea3();
 void P2Tarea4();
+//Practica 3
+void P3Tarea1();
+void drawCube();
+void drawRoom();
+void drawLights();
+void drawObject(GLfloat s, GLint c);
 // Variables globales
 int w = 800;
 int h = 500;
 GLfloat desZ = -5.0f;
 GLfloat rotY =  0.0f;
-
+GLfloat rotX = 0.0f;
+GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
+GLfloat PL1[] = {-2.0f, 1.0f,-4.0f, 1.0f };
 //Si gira de 1h en 1h
 GLfloat anio = (360.0/365.0)/24; //365*24 horas
 GLfloat dia = (360.0/24.0); //24 horas
@@ -93,8 +101,36 @@ void initFunc() {
     
  // Configuracion de etapas del cauce
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glShadeModel(GL_FLAT);
+    //glEnable(GL_CULL_FACE);
+    //glShadeModel(GL_FLAT);
+    glEnable(GL_LIGHTING);
+    
+    GLfloat IA[]  = { 0.9f, 0.9f, 0.9f, 1.0f };
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
+    
+    // Parámetros de la Luz 0 (direccional=sol)
+     GLfloat Ia0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+     GLfloat Id0[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+     GLfloat Is0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+     glLightfv(GL_LIGHT0, GL_AMBIENT , Ia0);
+     glLightfv(GL_LIGHT0, GL_DIFFUSE , Id0);
+     glLightfv(GL_LIGHT0, GL_SPECULAR, Is0);
+     glEnable(GL_LIGHT0);
+     
+  // Parámetros de la Luz 1 (posicional=bombilla)
+     GLfloat Ia1[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+     GLfloat Id1[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+     GLfloat Is1[] = { 0.7f, 0.7f, 0.7f, 1.0f };
+     glLightfv(GL_LIGHT1, GL_AMBIENT , Ia1);
+     glLightfv(GL_LIGHT1, GL_DIFFUSE , Id1);
+     glLightfv(GL_LIGHT1, GL_SPECULAR, Is1);
+     glLightf (GL_LIGHT1, GL_CONSTANT_ATTENUATION , 0.90f);
+     glLightf (GL_LIGHT1, GL_LINEAR_ATTENUATION   , 0.05f);
+     glLightf (GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01f);
+     glEnable(GL_LIGHT1);
+     
+  // Modelo de Sombreado
+     glShadeModel(GL_SMOOTH);
     
 }
 
@@ -145,12 +181,23 @@ void funDisplay() {
     // Aquí cargaremos la matriz V
     
  // Dibujamos los objetos (M)
-    glTranslatef(0.0f, 0.0f, desZ);
-    glTranslatef(0.0f, 0.0f, -5.0f);
+    //glTranslatef(0.0f, 0.0f, desZ);
+    
+    GLfloat eye[3]    = {0.0f,  2.0f,  0.0f};
+    GLfloat center[3] = {0.0f,  2.0f, -5.0f};
+    GLfloat up[3]     = {0.0f,  1.0f,  0.0f};
+    gluLookAt(    eye[0],    eye[1],    eye[2],
+               center[0], center[1], center[2],
+                up[0],     up[1],     up[2]);
     //P1tarea1();
     //P1tarea2();
     //P1tarea3();
-    P2Tarea1();
+    //P2Tarea1();
+    //glTranslatef(0.0f, 0.0f, -5.0f);
+    //glRotatef(rotY, 0.0f, 1.0f, 0.0f);
+    drawLights();
+    drawRoom();
+    drawObject(1.0f,100);
  // Intercambiamos los buffers
     glutSwapBuffers();
 }
@@ -428,4 +475,151 @@ void P2Tarea4(){
         P1drawPieza();
     glPopMatrix();
     esTarea4=true;
+}
+
+void P3Tarea1() {
+    
+}
+
+void drawCube() {
+     
+    GLfloat Ka[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+    GLfloat Kd[] = { 0.8f, 0.8f, 0.0f, 1.0f };
+    GLfloat Ks[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    glMaterialfv(GL_FRONT, GL_AMBIENT  , Ka);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE  , Kd);
+    glMaterialfv(GL_FRONT, GL_SPECULAR , Ks);
+    glMaterialf (GL_FRONT, GL_SHININESS, 100.0f);
+         
+  // Definimos el cubo
+     glBegin(GL_QUADS);
+      // CARA DERECHA (x = 1)
+         glVertex3f( 1.0f, -1.0f,  1.0f); 
+         glVertex3f( 1.0f, -1.0f, -1.0f);   
+         glVertex3f( 1.0f,  1.0f, -1.0f);    
+         glVertex3f( 1.0f,  1.0f,  1.0f);   
+      // CARA IZQUIERDA (x = -1)
+         glVertex3f(-1.0f, -1.0f,  1.0f);
+         glVertex3f(-1.0f,  1.0f,  1.0f);
+         glVertex3f(-1.0f,  1.0f, -1.0f);
+         glVertex3f(-1.0f, -1.0f, -1.0f);
+      // CARA SUPERIOR (y = 1)
+         glVertex3f( 1.0f,  1.0f,  1.0f);
+         glVertex3f( 1.0f,  1.0f, -1.0f);
+         glVertex3f(-1.0f,  1.0f, -1.0f); 
+         glVertex3f(-1.0f,  1.0f,  1.0f);
+      // CARA INFERIOR (y = -1)
+         glVertex3f( 1.0f, -1.0f,  1.0f);    
+         glVertex3f(-1.0f, -1.0f,  1.0f);
+         glVertex3f(-1.0f, -1.0f, -1.0f);    
+         glVertex3f( 1.0f, -1.0f, -1.0f);
+      // CARA DELANTERA (z = 1)
+         glVertex3f(-1.0f, -1.0f,  1.0f);
+         glVertex3f( 1.0f, -1.0f,  1.0f);
+         glVertex3f( 1.0f,  1.0f,  1.0f);
+         glVertex3f(-1.0f,  1.0f,  1.0f);
+      // CARA TRASERA (z = -1)
+         glVertex3f(-1.0f, -1.0f, -1.0f);
+         glVertex3f(-1.0f,  1.0f, -1.0f);
+         glVertex3f( 1.0f,  1.0f, -1.0f);  
+         glVertex3f( 1.0f, -1.0f, -1.0f);
+     glEnd();
+     
+ }
+
+void drawObject(GLfloat s, GLint c) {
+     
+  // Definimos el material del objeto
+     GLfloat Ka[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+     GLfloat Kd[] = { 0.7f, 0.7f, 0.3f, 1.0f };
+     GLfloat Ks[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+     glMaterialfv(GL_FRONT, GL_AMBIENT  , Ka);
+     glMaterialfv(GL_FRONT, GL_DIFFUSE  , Kd);
+     glMaterialfv(GL_FRONT, GL_SPECULAR , Ks);
+     glMaterialf (GL_FRONT, GL_SHININESS, 50.0f);
+     
+  // Definimos el objeto
+     glPushMatrix();
+         glTranslatef(0.0f, 2.0f, -5.0f);
+         glRotatef(rotX, 1.0f, 0.0f, 0.0f);
+         glRotatef(rotY, 0.0f, 1.0f, 0.0f);
+         glutSolidTeapot(s);
+     glPopMatrix();
+ 
+ }
+
+void drawLights() {
+    
+ // Luz 0: Direccional
+    glLightfv(GL_LIGHT0, GL_POSITION, PL0);
+    
+ // Luz 1: Posicional
+    glLightfv(GL_LIGHT1, GL_POSITION, PL1);
+    
+}
+
+void drawRoom() {
+    
+ // Definimos el material de la habitación
+     GLfloat Ka[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+     GLfloat Kd[] = { 0.7f, 0.7f, 0.7f, 1.0f };
+     GLfloat Ks[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+     glMaterialfv(GL_FRONT, GL_AMBIENT  , Ka);
+     glMaterialfv(GL_FRONT, GL_DIFFUSE  , Kd);
+     glMaterialfv(GL_FRONT, GL_SPECULAR , Ks);
+     glMaterialf (GL_FRONT, GL_SHININESS, 50.0f);
+     
+  // Definimos la habitación
+     glPushMatrix();
+         glTranslatef(0.0f,2.5f,-10.f);
+         glScalef(5.0f,2.5f,10.0f);
+         
+     // SUELO (y = -1)
+        glBegin(GL_QUADS);
+            glNormal3f( 0.0f,  1.0f,  0.0f);
+            glVertex3f(-1.0f, -1.0f,  1.0f);
+            glVertex3f( 1.0f, -1.0f,  1.0f);
+            glVertex3f( 1.0f, -1.0f, -1.0f);
+            glVertex3f(-1.0f, -1.0f, -1.0f);
+        glEnd();
+ 
+     // PARED IZQUIERDA (x = -1)
+        glBegin(GL_QUADS);
+            glNormal3f( 1.0f,  0.0f,  0.0f);
+            glVertex3f(-1.0f, -1.0f,  1.0f); 
+            glVertex3f(-1.0f, -1.0f, -1.0f);   
+            glVertex3f(-1.0f,  1.0f, -1.0f);    
+            glVertex3f(-1.0f,  1.0f,  1.0f); 
+        glEnd();
+ 
+     // PARED DEL FONDO (z = -1)
+        glBegin(GL_QUADS);
+            glNormal3f( 0.0f,  0.0f,  1.0f);
+            glVertex3f(-1.0f, -1.0f, -1.0f);
+            glVertex3f( 1.0f, -1.0f, -1.0f);
+            glVertex3f( 1.0f,  1.0f, -1.0f);
+            glVertex3f(-1.0f,  1.0f, -1.0f);
+        glEnd();
+ 
+     // PARED DERECHA (x = 1)
+        glBegin(GL_QUADS);
+            glNormal3f(-1.0f,  0.0f,  0.0f);
+            glVertex3f( 1.0f, -1.0f, -1.0f);
+            glVertex3f( 1.0f, -1.0f,  1.0f);
+            glVertex3f( 1.0f,  1.0f,  1.0f);
+            glVertex3f( 1.0f,  1.0f, -1.0f);
+        glEnd();
+ 
+     // TECHO (y = 1)
+        glBegin(GL_QUADS);
+            glNormal3f( 0.0f, -1.0f,  0.0f);
+            glVertex3f(-1.0f,  1.0f, -1.0f);  
+            glVertex3f( 1.0f,  1.0f, -1.0f);
+            glVertex3f( 1.0f,  1.0f,  1.0f);    
+            glVertex3f(-1.0f,  1.0f,  1.0f);
+        glEnd();
+     
+     glPopMatrix();
+    
+    glDisable(GL_TEXTURE_2D);
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="97">
+<configurationDescriptor version="95">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -27,6 +27,17 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>../../ig1617-master/libs/include</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>../../ig1617-master/libs/lib</pElem>
+          </linkerAddLib>
+          <commandLine>-lopengl32 -lglu32 -lglew32 -lfreeglut</commandLine>
+        </linkerTool>
       </compileType>
       <item path="practica3.cpp" ex="false" tool="1" flavor2="0">
       </item>
