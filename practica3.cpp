@@ -22,6 +22,13 @@ void funReshape(int w, int h);
 void funDisplay();
 void funKeyboard(int key, int x, int y);
 void destroyFunc();
+void funIdle();
+
+void myObject();
+void vboObject();
+void raton (int button, int state, int x, int y);
+void destroyFunc();
+void moveMouse(int x,int y);
 //Funciones de creacion de objetos
 void drawTriangulo(char color);
 void glDrawSphere(char color,float radio);
@@ -54,7 +61,11 @@ GLfloat RMes=0.0f;
 GLfloat T4Girar=0.0f;
 GLfloat T4Dezplazar=0.0f;
 GLboolean esTarea1=true;
-
+GLfloat giroVertical=0.0f;
+GLboolean anima=true;
+GLboolean hacerZoom=true;
+GLfloat zoom = -10.0f;
+int iniX;
 int main(int argc, char** argv) {
     
  // Inicializamos GLUT
@@ -78,6 +89,9 @@ int main(int argc, char** argv) {
     glutReshapeFunc(funReshape);
     glutDisplayFunc(funDisplay);
     glutSpecialFunc(funKeyboard);
+    glutMouseFunc(raton);
+    glutMotionFunc(moveMouse);
+    glutIdleFunc(funIdle); 
       
  // Bucle principal
     glutMainLoop();
@@ -92,37 +106,40 @@ void initFunc() {
     
  // Configuracion de etapas del cauce
     glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
-    //glShadeModel(GL_FLAT);
-    glEnable(GL_LIGHTING);
-    
-    GLfloat IA[]  = { 0.9f, 0.9f, 0.9f, 1.0f };
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
-    
-    // Parámetros de la Luz 0 (direccional=sol)
-     GLfloat Ia0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-     GLfloat Id0[] = { 0.9f, 0.9f, 0.9f, 1.0f };
-     GLfloat Is0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-     glLightfv(GL_LIGHT0, GL_AMBIENT , Ia0);
-     glLightfv(GL_LIGHT0, GL_DIFFUSE , Id0);
-     glLightfv(GL_LIGHT0, GL_SPECULAR, Is0);
-     glEnable(GL_LIGHT0);
-     
-  // Parámetros de la Luz 1 (posicional=bombilla)
-     GLfloat Ia1[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-     GLfloat Id1[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-     GLfloat Is1[] = { 0.7f, 0.7f, 0.7f, 1.0f };
-     glLightfv(GL_LIGHT1, GL_AMBIENT , Ia1);
-     glLightfv(GL_LIGHT1, GL_DIFFUSE , Id1);
-     glLightfv(GL_LIGHT1, GL_SPECULAR, Is1);
-     glLightf (GL_LIGHT1, GL_CONSTANT_ATTENUATION , 0.90f);
-     glLightf (GL_LIGHT1, GL_LINEAR_ATTENUATION   , 0.05f);
-     glLightf (GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01f);
-     glEnable(GL_LIGHT1);
-     
+    if(esTarea1){
+        glEnable(GL_LIGHTING);
+        GLfloat IA[]  = { 0.9f, 0.9f, 0.9f, 1.0f };
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
+
+        // Parámetros de la Luz 0 (direccional=sol)
+         GLfloat Ia0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+         GLfloat Id0[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+         GLfloat Is0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+         glLightfv(GL_LIGHT0, GL_AMBIENT , Ia0);
+         glLightfv(GL_LIGHT0, GL_DIFFUSE , Id0);
+         glLightfv(GL_LIGHT0, GL_SPECULAR, Is0);
+         glEnable(GL_LIGHT0);
+
+      // Parámetros de la Luz 1 (posicional=bombilla)
+         GLfloat Ia1[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+         GLfloat Id1[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+         GLfloat Is1[] = { 0.7f, 0.7f, 0.7f, 1.0f };
+         glLightfv(GL_LIGHT1, GL_AMBIENT , Ia1);
+         glLightfv(GL_LIGHT1, GL_DIFFUSE , Id1);
+         glLightfv(GL_LIGHT1, GL_SPECULAR, Is1);
+         glLightf (GL_LIGHT1, GL_CONSTANT_ATTENUATION , 0.90f);
+         glLightf (GL_LIGHT1, GL_LINEAR_ATTENUATION   , 0.05f);
+         glLightf (GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01f);
+         glEnable(GL_LIGHT1);
+         glShadeModel(GL_SMOOTH);
+    }
+    else{
+        glEnable(GL_CULL_FACE);
+        glShadeModel(GL_FLAT);
+    }
   // Modelo de Sombreado
-     glShadeModel(GL_SMOOTH);
-    
+     
+     
 }
 
 void destroyFunc() {
@@ -163,18 +180,21 @@ void funDisplay() {
     
  // Dibujamos los objetos (M)
     //glTranslatef(0.0f, 0.0f, desZ);
-    
-    GLfloat eye[3]    = {0.0f,  2.0f,  0.0f};
-    GLfloat center[3] = {0.0f,  2.0f, -5.0f};
-    GLfloat up[3]     = {0.0f,  1.0f,  0.0f};
-    gluLookAt(    eye[0],    eye[1],    eye[2],
-               center[0], center[1], center[2],
-                up[0],     up[1],     up[2]);
-
-    //glTranslatef(0.0f, 0.0f, -5.0f);
-    //glRotatef(rotY, 0.0f, 1.0f, 0.0f);
-    P3Tarea1();
-    
+    if(esTarea1){
+        GLfloat eye[3]    = {0.0f,  2.0f,  0.0f};
+        GLfloat center[3] = {0.0f,  2.0f, -5.0f};
+        GLfloat up[3]     = {0.0f,  1.0f,  0.0f};
+        gluLookAt(    eye[0],    eye[1],    eye[2],
+                   center[0], center[1], center[2],
+                    up[0],     up[1],     up[2]);
+    }
+    else{
+        glTranslatef(0.0f,0.0f, zoom);
+        glRotatef(giroVertical,1.0f,0.0f,0.0f);
+    }
+    //P3Tarea1();
+    P3Tarea2();
+    //P3Tarea3();
  // Intercambiamos los buffers
     glutSwapBuffers();
 }
@@ -204,50 +224,51 @@ void drawTriangulo(char color) {
 void funKeyboard(int key, int x, int y) {
     if(esTarea1){
         switch(key){
-        case GLUT_KEY_UP:
-            T4Girar += 0.1f;
-            break;
-        case GLUT_KEY_DOWN:
-            T4Girar  -= 0.1f;
-            break;
-        case GLUT_KEY_RIGHT:
-            T4Dezplazar += 0.1f;
-            break;
-        case GLUT_KEY_LEFT:
-            T4Dezplazar -= 0.1f;
-            break;
-        default:
-            T4Girar = 0.0f;
-            T4Dezplazar = 0.0f;
+            case GLUT_KEY_UP:
+                T4Girar += 0.1f;
+                break;
+            case GLUT_KEY_DOWN:
+                T4Girar  -= 0.1f;
+                break;
+            case GLUT_KEY_RIGHT:
+                T4Dezplazar += 0.1f;
+                break;
+            case GLUT_KEY_LEFT:
+                T4Dezplazar -= 0.1f;
+                break;    
+            default:
+                T4Girar = 0.0f;
+                T4Dezplazar = 0.0f;
         }
     }
     else{
-    switch(key) {
-        case GLUT_KEY_UP:
-            desZ -= 0.1f;
-            break;
-        case GLUT_KEY_DOWN:
-            desZ += 0.1f;
-            break;
-        case GLUT_KEY_RIGHT:
-            //rotY -= 5.0f;
-            RAnio -= anio;
-            RDia -= dia;
-            RMes -=mes;
-            break;
-        case GLUT_KEY_LEFT:
-            //rotY += 5.0f;
-            RAnio += anio;
-            RDia += dia;
-            RMes +=mes;
-            break;
-        default:
-            desZ = -5.0f;  
-            rotY =  0.0f;
+        if(anima==true)
+         switch(key) {
+             case GLUT_KEY_F1:
+                 anima = false;
+                 break;
+        }    
+        else{
+            switch(key){
+                case GLUT_KEY_F1:
+                    anima = true;
+                    break;
+                case GLUT_KEY_RIGHT:
+                    //rotY -= 5.0f;
+                    RAnio--;
+                    RDia -= 365;
+                    RMes -= 12;
+                    break;
+                case GLUT_KEY_LEFT:
+                    //rotY += 5.0f;
+                    RAnio++;
+                    RDia += 365;
+                    RMes +=12;
+                    break;
+            }
+        }    
     }
-    }
-    glutPostRedisplay();
-    
+    glutPostRedisplay();    
 }
 
 void glDrawSphere(char color,float radio){
@@ -278,6 +299,49 @@ void glDrawSphere(char color,float radio){
     }
     glutWireSphere(radio,20,20); 
     //(GLdouble radius,GLint slices, GLint stacks); (number of lines)
+}
+
+void funIdle() {
+    if(anima){
+        RAnio += anio;
+        RDia += dia;
+        RMes += mes;
+    }   
+    Sleep(10);   
+    glutPostRedisplay();  
+}
+
+void raton (int button, int state, int x, int y){
+    if(!esTarea1){
+        switch(button){
+            case GLUT_LEFT_BUTTON:
+                //gluLookAt(0,0,1,0,0,-5,0,1,0);
+                if(state == GLUT_DOWN)
+                    iniX=y;
+                /*if(state == GLUT_UP)
+                    giroVertical += (x-iniX)*10;
+                */  
+                    break;
+            //Rueba arriba
+            case 3:
+                if (zoom<-7)
+                    zoom+=1;
+                break;
+            //Rueda abajo    
+            case 4:
+                if (zoom>-17)
+                    zoom-=1;
+                break;
+        }        
+    }
+    glutPostRedisplay();
+}
+void moveMouse(int x,int y){
+    if(!esTarea1){
+        giroVertical = (GLfloat)(y - iniX);
+    }
+    //angulo =(GLfloat)  -(y-300)/10;
+    glutPostRedisplay();
 }
 
 void P3Tarea1() {
@@ -312,9 +376,10 @@ void P3Tarea2() {
         glPopMatrix();
         //incrementar variables
     glPopMatrix();
+    esTarea1=false;
 }
 void P3Tarea3() {
-    
+    esTarea1=false;
 }
 
 void drawCube() {
