@@ -53,7 +53,7 @@ GLfloat RMes=0.0f;
 
 GLfloat T4Girar=0.0f;
 GLfloat T4Dezplazar=0.0f;
-GLboolean esTarea4=true;
+GLboolean esTarea1=true;
 
 int main(int argc, char** argv) {
     
@@ -149,21 +149,11 @@ void funDisplay() {
  // Para configurar la matriz matriz P
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();  
-    // Proyeccion Ortogonal: 
-    //GLfloat left=-4.0, right=4.0, bottom=-4.0, top=4.0, nplane=1.0, fplane=10.0;
-    //glOrtho(left, right, bottom, top, nplane, fplane);
-  
-    //Proyeccion en Frustum
-    //GLfloat left=-2.0, right=2.0, bottom=-2.0, top=2.0, nplane=3.0, fplane=10.0;
-    //glFrustum(left, right, bottom, top, nplane, fplane);
-  
 
-    //En perspectiva
-    /**/
     GLfloat aspectRatio = (GLfloat)w/(GLfloat)h;    
     GLfloat fovy = 50.0f, nplane = 0.1f, fplane = 20.0f;
     gluPerspective(fovy,aspectRatio,nplane,fplane);
-    /**/ 
+
  // Para configurar las matrices M y V
     glMatrixMode(GL_MODELVIEW);  
     glLoadIdentity();
@@ -180,15 +170,11 @@ void funDisplay() {
     gluLookAt(    eye[0],    eye[1],    eye[2],
                center[0], center[1], center[2],
                 up[0],     up[1],     up[2]);
-    //P1tarea1();
-    //P1tarea2();
-    //P1tarea3();
-    //P2Tarea1();
+
     //glTranslatef(0.0f, 0.0f, -5.0f);
     //glRotatef(rotY, 0.0f, 1.0f, 0.0f);
-    drawLights();
-    drawRoom();
-    drawObject(1.0f,100);
+    P3Tarea1();
+    
  // Intercambiamos los buffers
     glutSwapBuffers();
 }
@@ -216,7 +202,7 @@ void drawTriangulo(char color) {
 }
 
 void funKeyboard(int key, int x, int y) {
-    if(esTarea4){
+    if(esTarea1){
         switch(key){
         case GLUT_KEY_UP:
             T4Girar += 0.1f;
@@ -295,7 +281,10 @@ void glDrawSphere(char color,float radio){
 }
 
 void P3Tarea1() {
-    
+    drawLights();
+    drawRoom();
+    drawObject(1.0f,100);
+    esTarea1=true;
 }
 void P3Tarea2() {
      glPushMatrix();
