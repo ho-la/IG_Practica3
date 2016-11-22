@@ -49,6 +49,10 @@ GLfloat rotY =  0.0f;
 GLfloat rotX = 0.0f;
 GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 GLfloat PL1[] = {-2.0f, 1.0f,-4.0f, 1.0f };
+//Tarea2
+GLfloat T2PL0[] = { -20.0f, 1.0f, 1.0f, 0.0f };
+GLfloat T2PL1[] = {-2.0f, 1.0f,-4.0f, 1.0f };
+GLfloat T2PL2[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 //Si gira de 4h en 4h
 GLfloat anio = (360.0/365.0)/6; //365*24 horas
 GLfloat dia = (360.0/6.0); //24 horas
@@ -60,7 +64,7 @@ GLfloat RMes=0.0f;
 
 GLfloat T4Girar=0.0f;
 GLfloat T4Dezplazar=0.0f;
-GLboolean esTarea1=true;
+GLboolean esTarea1;
 GLfloat giroVertical=0.0f;
 GLboolean anima=true;
 GLboolean hacerZoom=true;
@@ -106,11 +110,12 @@ void initFunc() {
     
  // Configuracion de etapas del cauce
     glEnable(GL_DEPTH_TEST);
-    if(esTarea1){
-        glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
+        //Luz ambientar inicial
+        //GLfloat IA[]  = { 0.2f, 0.2f, 0.2f, 1.0f };
         GLfloat IA[]  = { 0.9f, 0.9f, 0.9f, 1.0f };
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
-
+    if(esTarea1){
         // Parámetros de la Luz 0 (direccional=sol)
          GLfloat Ia0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
          GLfloat Id0[] = { 0.9f, 0.9f, 0.9f, 1.0f };
@@ -134,6 +139,15 @@ void initFunc() {
          glShadeModel(GL_SMOOTH);
     }
     else{
+        
+        GLfloat T2Ia0[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+        GLfloat T2Id0[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+        GLfloat T2Is0[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+        glLightfv(GL_LIGHT2,GL_AMBIENT,T2Ia0);
+        glLightfv(GL_LIGHT2,GL_DIFFUSE,T2Id0);
+        glLightfv(GL_LIGHT2,GL_SPECULAR,T2Is0);
+        glEnable(GL_LIGHT2);
+        
         glEnable(GL_CULL_FACE);
         glShadeModel(GL_FLAT);
     }
@@ -195,7 +209,7 @@ void funDisplay() {
     //P3Tarea1();
     P3Tarea2();
     //P3Tarea3();
- // Intercambiamos los buffers
+    // Intercambiamos los buffers
     glutSwapBuffers();
 }
 
@@ -295,9 +309,17 @@ void glDrawSphere(char color,float radio){
             break;
         //White
         default:
-            glColor3f(1.0f, 1.0f, 1.0f);            
+            glColor3f(1.0f, 1.0f, 0.0f);            
     }
-    glutWireSphere(radio,20,20); 
+    GLfloat Ka[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+    GLfloat Kd[] = { 0.0f, 0.8f, 0.0f, 1.0f };
+    GLfloat Ks[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+    glMaterialfv(GL_FRONT, GL_AMBIENT  , Ka);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE  , Kd);
+    glMaterialfv(GL_FRONT, GL_SPECULAR , Ks);
+    glMaterialf (GL_FRONT, GL_SHININESS, 100.0f);
+    glutSolidSphere(radio,20,20);
+    //glutWireSphere(radio,20,20); 
     //(GLdouble radius,GLint slices, GLint stacks); (number of lines)
 }
 
@@ -351,6 +373,13 @@ void P3Tarea1() {
     esTarea1=true;
 }
 void P3Tarea2() {
+        /*
+        1. Colocar una tenue luz ambiental para iluminar la imagen globalmente (esta luz ambiental se puede
+            aumentar con la tecla + y disminuir con la tecla -).
+        2. Colocar una fuente de luz intensa en el sol.
+        3. Añadir un tono amarillo al Sol, azul a la Tierra y blanco a la Luna.
+        4. Transformar la luna en una nueva estrella haciendo que se encienda y apague con la tecla E.
+        */
      glPushMatrix();
         //Dibujar sol
         glPushMatrix();
@@ -379,6 +408,7 @@ void P3Tarea2() {
     esTarea1=false;
 }
 void P3Tarea3() {
+    /*añadir las texturas del Sol, Tierra y Luna*/
     esTarea1=false;
 }
 
@@ -450,13 +480,16 @@ void drawObject(GLfloat s, GLint c) {
  }
 
 void drawLights() {
-    
+    if(esTarea1){
  // Luz 0: Direccional
     glLightfv(GL_LIGHT0, GL_POSITION, PL0);
-    
  // Luz 1: Posicional
     glLightfv(GL_LIGHT1, GL_POSITION, PL1);
-    
+    }
+    else{
+        glLightfv(GL_LIGHT2, GL_POSITION, T2PL0);
+        //glLightfv(GL_LIGHT3, GL_POSITION, T2PL1);
+    }
 }
 
 void drawRoom() {
