@@ -14,9 +14,11 @@ void raton (int button, int state, int x, int y);
 void moveMouse(int x,int y);
 */
 void glDrawSphere(char color,float radio,bool luz);
+void drawCone();
 void P3Tarea1();
 void P3Tarea2();
 void P3Tarea3();
+int tarea=1;
 // Variables globales
 int w = 500;
 int h = 500;
@@ -25,6 +27,7 @@ GLfloat rotY = 0.0f;
 //GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 GLfloat PL0[] = { 0.0f, 0.0f, -10.0f, 1.0f };//ultimo parametro 0=direccionar,1=posicional
 GLfloat PL1[] = {-2.0f, 1.0f,-4.0f, 1.0f };
+GLfloat cono[] = {1.0f,1.0f,1.0f};
 #define NT 3
 GLuint textureName[NT];
 //Mis variables globales
@@ -75,7 +78,6 @@ int main(int argc, char** argv) {
     
     return(0);
 }
-
 
 void initFunc() {
     
@@ -182,7 +184,7 @@ void funDisplay() {
  // Matriz de Vista V (Cámara)
     
     if(esTarea1){
-        GLfloat eye[3]    = {0.0f,  2.0f,  0.0f};
+        GLfloat eye[3]    = {0.0f,  2.0f,  5.0f};
         GLfloat center[3] = {0.0f,  2.0f, -5.0f};
         GLfloat up[3]     = {0.0f,  1.0f,  0.0f};
         gluLookAt(    eye[0],    eye[1],    eye[2],
@@ -190,12 +192,16 @@ void funDisplay() {
                        up[0],     up[1],     up[2]);
     } 
     else{
-        glTranslatef(0.0f, 0.0f, -10.0f);
+        glTranslatef(0.0f, 0.0f, -5.0f);
     }
  // Dibujamos la escena(M)
-    //P3Tarea1();
-    P3Tarea2();
-    //P3Tarea3();
+    switch (tarea){
+        case 1: P3Tarea1();
+            break;
+        case 2: P3Tarea2();
+            break;
+        default: P3Tarea3();
+    }
  // Intercambiamos los buffers
     glutSwapBuffers();
     
@@ -256,10 +262,10 @@ void drawRoom() {
         glBindTexture(GL_TEXTURE_2D, textureName[1]);
         glBegin(GL_QUADS);
             glNormal3f( 0.0f,  0.0f,  1.0f);
-            glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
-            glTexCoord2f(4.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
-            glTexCoord2f(4.0f, 2.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
-            glTexCoord2f(0.0f, 2.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -0.5f);
+            glTexCoord2f(4.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -0.5f);
+            glTexCoord2f(4.0f, 2.0f); glVertex3f( 1.0f,  1.0f, -0.5f);
+            glTexCoord2f(0.0f, 2.0f); glVertex3f(-1.0f,  1.0f, -0.5f);
         glEnd();
 
      // PARED DERECHA (x = 1)
@@ -450,9 +456,29 @@ void glDrawSphere(char color,float radio, bool luz){
     
     //(GLdouble radius,GLint slices, GLint stacks); (number of lines)
 }
+
+void drawCono(){
+     // Definimos el material del Objeto
+    GLfloat Ka[] = { 0.1, 0.1, 0.1, 1.0 };
+    GLfloat Kd[] = { 0.5, 0.5, 0.2, 1.0 };
+    GLfloat Ks[] = { 0.9, 0.9, 0.9, 1.0 };
+    glMaterialfv(GL_FRONT, GL_AMBIENT  , Ka);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE  , Kd);
+    glMaterialfv(GL_FRONT, GL_SPECULAR , Ks);
+    glMaterialf (GL_FRONT, GL_SHININESS, 100.0);
+    
+ // Definimos el Objeto
+    glPushMatrix();
+        glTranslatef(cono[0], cono[1],cono[2]);
+        glRotatef(-90, 1.0, 0.0, 0.0);
+        glutSolidCone(0.3,2.0,10,10);
+    glPopMatrix();
+}
+
 void P3Tarea1() {
     drawLights();
     drawRoom();
+    drawCono();
     drawObject(1.0f,100);
     esTarea1=true;
 }
