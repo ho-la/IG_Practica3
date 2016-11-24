@@ -35,7 +35,7 @@ GLfloat RAnio = 0.0f;
 GLfloat RDia = 0.0f;
 GLfloat RMes=0.0f;
 
-GLboolean anima;
+GLboolean anima=true;
 GLboolean esTarea1;
 int main(int argc, char** argv) {
     
@@ -170,7 +170,8 @@ void funDisplay() {
     glLoadIdentity();
     
  // Matriz de Proyección P (Cámara): Perspectiva (gluPerspective)
-    GLfloat fovy = 75.0f, aspectRatio = (GLfloat)w/(GLfloat)h, nplane = 0.1f, fplane = 25.0f;
+    GLfloat fovy = 50.0f, aspectRatio = (GLfloat)w/(GLfloat)h, nplane = 0.1f, fplane = 30.0f;
+    //GLfloat fovy = 75.0f, aspectRatio = (GLfloat)w/(GLfloat)h, nplane = 0.1f, fplane = 25.0f;
     gluPerspective(fovy,aspectRatio,nplane,fplane);
       
  // Para configurar las matrices M y V
@@ -178,14 +179,18 @@ void funDisplay() {
     glLoadIdentity();
     
  // Matriz de Vista V (Cámara)
-    GLfloat eye[3]    = {0.0f,  2.0f,  0.0f};
-    GLfloat center[3] = {0.0f,  2.0f, -5.0f};
-    GLfloat up[3]     = {0.0f,  1.0f,  0.0f};
-    gluLookAt(    eye[0],    eye[1],    eye[2],
-               center[0], center[1], center[2],
-                   up[0],     up[1],     up[2]);
-    if(!esTarea1)
+    
+    if(esTarea1){
+        GLfloat eye[3]    = {0.0f,  2.0f,  0.0f};
+        GLfloat center[3] = {0.0f,  2.0f, -5.0f};
+        GLfloat up[3]     = {0.0f,  1.0f,  0.0f};
+        gluLookAt(    eye[0],    eye[1],    eye[2],
+                   center[0], center[1], center[2],
+                       up[0],     up[1],     up[2]);
+    } 
+    else{
         glTranslatef(0.0f, 0.0f, -10.0f);
+    }
  // Dibujamos la escena(M)
     //P3Tarea1();
     P3Tarea2();
@@ -202,7 +207,10 @@ void drawLights() {
     
  // Luz 1: Posicional
     glLightfv(GL_LIGHT1, GL_POSITION, PL1);
-    
+//Para ver los colores de las materiales
+    glEnable (GL_COLOR_MATERIAL);
+    glColorMaterial (GL_FRONT, GL_DIFFUSE);
+    glColorMaterial (GL_FRONT, GL_SPECULAR);
 }
 
 void drawRoom() {
@@ -326,13 +334,11 @@ void funKeyboard(int key, int x, int y) {
         } 
     }
     else{
-    //F1 detener/arrancar animación
-    //Con la animación detenida, rotar de forma independiente la Tierra y la Luna mediante las teclas de las Flechas.
         if(anima==true)
-         switch(key) {
-             case GLUT_KEY_F1:
-                 anima = false;
-                 break;
+            switch(key) {
+                case GLUT_KEY_F1:
+                    anima = false;
+                    break;
         }    
         else{
             switch(key){
@@ -341,15 +347,15 @@ void funKeyboard(int key, int x, int y) {
                     break;
                 case GLUT_KEY_RIGHT:
                     //rotY -= 5.0f;
-                    RAnio--;
-                    RDia -= 365;
-                    RMes -= 12;
+                    RAnio-= anio;
+                    RDia -= dia;
+                    RMes -= mes;
                     break;
                 case GLUT_KEY_LEFT:
                     //rotY += 5.0f;
-                    RAnio++;
-                    RDia += 365;
-                    RMes +=12;
+                    RAnio+= anio;
+                    RDia += dia;
+                    RMes += mes;
                     break;
             }
         }    
@@ -412,9 +418,9 @@ void glDrawSphere(char color,float radio, bool luz){
             Kd[2]=1.0f;
             Kd[3]=1.0f;
     }
+    
     // Definimos el material del objeto
     GLfloat Ka[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-    //GLfloat Kd[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     GLfloat Ks[] = { 0.5f, 0.5f, 0.5f, 1.0f };
     //GLfloat Kd[] = { 0.7f, 0.7f, 0.3f, 1.0f };
     //GLfloat Ks[] = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -422,8 +428,11 @@ void glDrawSphere(char color,float radio, bool luz){
     glMaterialfv(GL_FRONT, GL_DIFFUSE  , Kd);
     glMaterialfv(GL_FRONT, GL_SPECULAR , Ks);
     glMaterialf (GL_FRONT, GL_SHININESS, 50.0f);
-    
- // Definimos el objeto
+    //Poner luz al objeto
+    if(luz){
+        
+    }
+ // Definimos el objeto 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_TEXTURE_GEN_S);
     glEnable(GL_TEXTURE_GEN_T);
@@ -453,11 +462,12 @@ void P3Tarea2() {
         3. Añadir un tono amarillo al Sol, azul a la Tierra y blanco a la Luna.
         4. Transformar la luna en una nueva estrella haciendo que se encienda y apague con la tecla E.
         */
-     glPushMatrix();
+    //drawRoom();
+    glPushMatrix();
         //Dibujar sol
         glPushMatrix();
             glRotatef(90,1.0f,0.0f,0.0f);
-            glDrawSphere('y',2.0f,false);
+            glDrawSphere('y',2.0f,true);
         glPopMatrix();
         //Dibujar tierra
         glRotatef(RAnio,0.0f,1.0f,0.0f);
@@ -478,7 +488,6 @@ void P3Tarea2() {
         glPopMatrix();
         //incrementar variables
     glPopMatrix();
-    anima=true;
     esTarea1=false;
 }
 void P3Tarea3() {
