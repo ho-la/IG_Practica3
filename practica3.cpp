@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <stdio.h>
-//#include "RgbImage.h"
+#include "RgbImage.h"
 
 void initFunc();
 void funReshape(int w, int h);
@@ -22,7 +22,8 @@ int w = 500;
 int h = 500;
 GLfloat rotX = 0.0f;
 GLfloat rotY = 0.0f;
-GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
+//GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
+GLfloat PL0[] = { 0.0f, 0.0f, -10.0f, 1.0f };//ultimo parametro 0=direccionar,1=posicional
 GLfloat PL1[] = {-2.0f, 1.0f,-4.0f, 1.0f };
 #define NT 3
 GLuint textureName[NT];
@@ -207,10 +208,11 @@ void drawLights() {
     
  // Luz 1: Posicional
     glLightfv(GL_LIGHT1, GL_POSITION, PL1);
-//Para ver los colores de las materiales
+/*Para ver los colores de las materiales
     glEnable (GL_COLOR_MATERIAL);
     glColorMaterial (GL_FRONT, GL_DIFFUSE);
     glColorMaterial (GL_FRONT, GL_SPECULAR);
+*/
 }
 
 void drawRoom() {
