@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <stdio.h>
+#include <math.h>
 #include "RgbImage.h"
 
 void initFunc();
@@ -9,6 +10,7 @@ void funDisplay();
 void funKeyboard(int key, int x, int y);
 void destroyFunc();
 void funIdle();
+void keyboard(unsigned char key,int x,int y);
 /*
 void raton (int button, int state, int x, int y);
 void moveMouse(int x,int y);
@@ -64,6 +66,7 @@ int main(int argc, char** argv) {
  // Configuración CallBacks
     glutReshapeFunc(funReshape);
     glutDisplayFunc(funDisplay);
+    glutKeyboardFunc(keyboard);
     glutSpecialFunc(funKeyboard);
     glutIdleFunc(funIdle); 
     /*
@@ -109,8 +112,14 @@ void initFunc() {
     GLfloat Id1[] = { 0.8f, 0.8f, 0.8f, 1.0f };
     GLfloat Is1[] = { 1.0f, 0.0f, 0.0f, 1.0f };
     glLightfv(GL_LIGHT1, GL_AMBIENT , Ia1);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE , IC);
+    if(esTarea1){
+        glLightfv(GL_LIGHT1, GL_DIFFUSE , IC);
+    }    
+    else{
+        glLightfv(GL_LIGHT1, GL_DIFFUSE , Id1);
+    }    
     glLightfv(GL_LIGHT1, GL_SPECULAR, Is1);
+   
     glLightf (GL_LIGHT1, GL_CONSTANT_ATTENUATION , 0.90f);
     glLightf (GL_LIGHT1, GL_LINEAR_ATTENUATION   , 0.05f);
     glLightf (GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01f);
@@ -194,7 +203,7 @@ void funDisplay() {
                        up[0],     up[1],     up[2]);
     } 
     else{
-        glTranslatef(0.0f, 0.0f, -5.0f);
+        glTranslatef(0.0f, 0.0f, -10.0f);
     }
  // Dibujamos la escena(M)
     switch (tarea){
@@ -331,6 +340,22 @@ void drawObject(GLfloat s, GLint c) {
     
 }
 
+void keyboard(unsigned char key,int x,int y){
+    switch(key){
+        case '+':
+               IC[0]+=0.2;
+               IC[1]+=0.2;
+               IC[2]+=0.2;
+               break;
+        case '-' :
+           IC[0]-=0.2;
+           IC[1]-=0.2;
+           IC[2]-=0.2;
+           break; 
+    }
+    glutPostRedisplay();
+}
+
 void funKeyboard(int key, int x, int y) {
     if(esTarea1){
         switch(key) {
@@ -350,6 +375,7 @@ void funKeyboard(int key, int x, int y) {
                if(PL1[0]<4)
                     PL1[0] += 0.5f;
                break;
+              
         } 
     }
     else{
@@ -381,7 +407,7 @@ void funKeyboard(int key, int x, int y) {
     }
     glutPostRedisplay();    
 }
-
+/*
 void funKeyboard(unsigned char key, int x, int y) {
     
    switch(key) {
@@ -394,7 +420,7 @@ void funKeyboard(unsigned char key, int x, int y) {
            } /*else {
                 IA[0]+=0.1;IA[1]+=0.1;IA[2]+=0.1;
                 glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
-           }*/
+           }
            break;
        case '-' :
            if (esTarea1){
@@ -404,11 +430,12 @@ void funKeyboard(unsigned char key, int x, int y) {
            } /*else {
                IA[0]-=0.1;IA[1]-=0.1;IA[2]-=0.1;
                glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
-           }*/
+           }
            break;
    }
    glutPostRedisplay();
 }
+*/
 
 void funIdle() {
     if(anima){
