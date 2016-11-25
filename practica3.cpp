@@ -20,14 +20,14 @@ void P3Tarea2();
 void P3Tarea3();
 int tarea=1;
 // Variables globales
-int w = 500;
+int w = 900;
 int h = 500;
 GLfloat rotX = 0.0f;
 GLfloat rotY = 0.0f;
 //GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 GLfloat PL0[] = { 0.0f, 0.0f, -10.0f, 1.0f };//ultimo parametro 0=direccionar,1=posicional
-GLfloat PL1[] = {-2.0f, 1.0f,-4.0f, 1.0f };
-GLfloat cono[] = {1.0f,1.0f,1.0f};
+GLfloat PL1[] = {3.0f, 2.0f, -6.0f, 1.0f };
+GLfloat IC[]  = { 1.9f, 1.5f, 1.5f, 1.0f };
 #define NT 3
 GLuint textureName[NT];
 //Mis variables globales
@@ -48,7 +48,8 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(w,h);
     glutInitWindowPosition(50,50);
-    glutCreateWindow("Sesion 5");
+    glutCreateWindow("QiaoLang Chen y Alexey Sorokin");
+    
     
  // Inicializamos GLEW
     GLenum err = glewInit();
@@ -95,20 +96,20 @@ void initFunc() {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
     
  // Parámetros de la Luz 0 (direccional=sol)
-    GLfloat Ia0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    /*GLfloat Ia0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
     GLfloat Id0[] = { 0.9f, 0.9f, 0.9f, 1.0f };
     GLfloat Is0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
     glLightfv(GL_LIGHT0, GL_AMBIENT , Ia0);
     glLightfv(GL_LIGHT0, GL_DIFFUSE , Id0);
     glLightfv(GL_LIGHT0, GL_SPECULAR, Is0);
-    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT0);*/
     
  // Parámetros de la Luz 1 (posicional=bombilla)
-    GLfloat Ia1[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    GLfloat Ia1[] = { 0.1f, 0.1f, 0.1f, 1.0f };
     GLfloat Id1[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-    GLfloat Is1[] = { 0.7f, 0.7f, 0.7f, 1.0f };
+    GLfloat Is1[] = { 1.0f, 0.0f, 0.0f, 1.0f };
     glLightfv(GL_LIGHT1, GL_AMBIENT , Ia1);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE , Id1);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE , IC);
     glLightfv(GL_LIGHT1, GL_SPECULAR, Is1);
     glLightf (GL_LIGHT1, GL_CONSTANT_ATTENUATION , 0.90f);
     glLightf (GL_LIGHT1, GL_LINEAR_ATTENUATION   , 0.05f);
@@ -117,6 +118,7 @@ void initFunc() {
     
  // Modelo de Sombreado
     glShadeModel(GL_SMOOTH);
+    glEnable(GL_NORMALIZE);
     /*
  // Texturas
     glGenTextures(NT,textureName);
@@ -184,7 +186,7 @@ void funDisplay() {
  // Matriz de Vista V (Cámara)
     
     if(esTarea1){
-        GLfloat eye[3]    = {0.0f,  2.0f,  5.0f};
+        GLfloat eye[3]    = {0.0f,  3.0f,  5.0f};
         GLfloat center[3] = {0.0f,  2.0f, -5.0f};
         GLfloat up[3]     = {0.0f,  1.0f,  0.0f};
         gluLookAt(    eye[0],    eye[1],    eye[2],
@@ -207,23 +209,28 @@ void funDisplay() {
     
 }
 
-void drawLights() {
+void drawLights1() {
     
- // Luz 0: Direccional
-    glLightfv(GL_LIGHT0, GL_POSITION, PL0);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE , IC);
+    glEnable(GL_LIGHT1);
+ // Definimos el material de las esferas que representan las luces mediante glColor
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     
- // Luz 1: Posicional
+ 
+    glPushMatrix();
+        glTranslatef(PL1[0],PL1[1],PL1[2]);
+        glutSolidSphere(0.02,10,10);
+    glPopMatrix();
     glLightfv(GL_LIGHT1, GL_POSITION, PL1);
-/*Para ver los colores de las materiales
-    glEnable (GL_COLOR_MATERIAL);
-    glColorMaterial (GL_FRONT, GL_DIFFUSE);
-    glColorMaterial (GL_FRONT, GL_SPECULAR);
-*/
+
+    glDisable(GL_COLOR_MATERIAL);
 }
 
 void drawRoom() {
     
  // Definimos el material de la habitación
+    
     GLfloat Ka[] = { 0.2f, 0.2f, 0.2f, 1.0f };
     GLfloat Kd[] = { 0.7f, 0.7f, 0.7f, 1.0f };
     GLfloat Ks[] = { 0.8f, 0.8f, 0.8f, 1.0f };
@@ -313,7 +320,7 @@ void drawObject(GLfloat s, GLint c) {
     glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
     glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
     glPushMatrix();
-        glTranslatef(0.0f, 2.0f, -5.0f);
+        glTranslatef(0.0f, 1.0f, -5.0f);
         glRotatef(rotX, 1.0f, 0.0f, 0.0f);
         glRotatef(rotY, 0.0f, 1.0f, 0.0f);
         glutSolidTeapot(s);
@@ -328,16 +335,20 @@ void funKeyboard(int key, int x, int y) {
     if(esTarea1){
         switch(key) {
            case GLUT_KEY_UP:
-               rotX += 1.0f;
+               if(PL1[2]>-13)
+                    PL1[2] -= 0.5f;
                break;
            case GLUT_KEY_DOWN:
-               rotX -= 1.0f;
+               if(PL1[2]<-0.5)
+                    PL1[2] += 0.5f;
                break;
            case GLUT_KEY_LEFT:
-               rotY += 1.0f;
+               if(PL1[0]>-4)
+                    PL1[0] -= 0.5f;
                break;
            case GLUT_KEY_RIGHT:
-               rotY -= 1.0f;
+               if(PL1[0]<4)
+                    PL1[0] += 0.5f;
                break;
         } 
     }
@@ -369,6 +380,34 @@ void funKeyboard(int key, int x, int y) {
         }    
     }
     glutPostRedisplay();    
+}
+
+void funKeyboard(unsigned char key, int x, int y) {
+    
+   switch(key) {
+       
+       case '+' :
+           if (esTarea1){
+               IC[0]+=0.2;
+               IC[1]+=0.2;
+               IC[2]+=0.2;
+           } /*else {
+                IA[0]+=0.1;IA[1]+=0.1;IA[2]+=0.1;
+                glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
+           }*/
+           break;
+       case '-' :
+           if (esTarea1){
+               IC[0]-=0.2;
+               IC[1]-=0.2;
+               IC[2]-=0.2;
+           } /*else {
+               IA[0]-=0.1;IA[1]-=0.1;IA[2]-=0.1;
+               glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
+           }*/
+           break;
+   }
+   glutPostRedisplay();
 }
 
 void funIdle() {
@@ -469,18 +508,18 @@ void drawCono(){
     
  // Definimos el Objeto
     glPushMatrix();
-        glTranslatef(cono[0], cono[1],cono[2]);
+        glTranslatef(PL1[0], PL1[1]-2,PL1[2]);
         glRotatef(-90, 1.0, 0.0, 0.0);
-        glutSolidCone(0.3,2.0,10,10);
+        glutSolidCone(0.2,2.0,10,10);
     glPopMatrix();
 }
 
 void P3Tarea1() {
-    drawLights();
+    esTarea1=true;
+    drawLights1();
     drawRoom();
     drawCono();
     drawObject(1.0f,100);
-    esTarea1=true;
 }
 void P3Tarea2() {
         /*
