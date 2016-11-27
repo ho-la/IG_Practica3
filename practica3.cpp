@@ -14,9 +14,6 @@ void destroyFunc();
 void funIdle();
 void keyboard(unsigned char key,int x,int y);
 
-void raton (int button, int state, int x, int y);
-void moveMouse(int x,int y);
-
 void glDrawSphere(char color,float radio,bool luz);
 void drawCone();
 void P3Tarea1();
@@ -34,16 +31,21 @@ GLfloat PL0[] = { 0.0f, 0.0f, -10.0f, 1.0f };//ultimo parametro 0=direccionar,1=
 GLfloat PL1[] = {3.0f, 2.0f, -6.0f, 1.0f };
 GLfloat IC[]  = { 1.9f, 1.5f, 1.5f, 1.0f };
 GLfloat IA[]  = {0.2f, 0.2f, 0.2f, 1.0f };
-GLfloat ISol[]  = { 10.0f, 10.0f, 10.0f, 1.0f };
+GLfloat ISol[]  = { 15.0f, 15.0f, 15.0f, 1.0f };
 GLfloat PLT[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat PLL[] = { 0.0, 0.0, 0.0, 1.0 };
 #define NT 3
 GLuint textureName[NT];
 //Mis variables globales
 //Si gira de 6h en 6h
-int anio = (360.0/365.0)/4; //365*24 horas
-int dia = (360.0/4.0); //24 horas
-int mes= anio*12;  // Luna gira 12 veces sobre a Tierra en un año
+GLfloat anio = (360.0/365.0)/4; //365*24 horas
+GLfloat dia = (360.0/4.0); //24 horas
+GLfloat mes= anio*12;  // Luna gira 12 veces sobre a Tierra en un año
+
+int Anio = 0; 
+int Dia = 0; 
+int Mes= 0;  
+
 GLfloat RAnio = 0.0f;
 GLfloat RDia = 0.0f;
 GLfloat RMes=0.0f;
@@ -92,8 +94,6 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(funKeyboard);
     glutIdleFunc(funIdle); 
-    glutMouseFunc(raton);
-    glutMotionFunc(moveMouse);
       
  // Bucle principal
     glutMainLoop();
@@ -251,9 +251,13 @@ void funDisplay() {
         glTranslatef(0.0f, 0.0f, -10.0f);
     }
  // Dibujamos la escena(M)
-    //P3Tarea1();
-    P3Tarea2();
-    //P3Tarea3();
+    switch (tarea){
+        case 1: P3Tarea1();
+            break;
+        case 2: P3Tarea2();
+            break;
+        default: P3Tarea3();
+    }
     
  // Intercambiamos los buffers
     glutSwapBuffers();
@@ -497,45 +501,18 @@ void funKeyboard(int key, int x, int y) {
     glutPostRedisplay();    
 }
 
-void raton (int button, int state, int x, int y){
-       if(!esTarea1){
-        switch(button){
-            case GLUT_LEFT_BUTTON:
-                //gluLookAt(0,0,1,0,0,-5,0,1,0);
-                if(state == GLUT_DOWN)
-                    iniX=y;
-                /*if(state == GLUT_UP)
-                    giroVertical += (x-iniX)*10;
-                */  
-                    break;
-            //Rueba arriba
-            case 3:
-                if (zoom<-7)
-                    zoom+=1;
-                break;
-            //Rueda abajo    
-            case 4:
-                if (zoom>-17)
-                    zoom-=1;
-                break;
-        }        
-    }
-    glutPostRedisplay();
-}
-void moveMouse(int x,int y){
-    if(!esTarea1){
-        giroVertical = (GLfloat)(y - iniX);
-    }
-    //angulo =(GLfloat)  -(y-300)/10;
-    glutPostRedisplay();
-}
-
 void funIdle() {
-    if(anima){
-        RAnio += anio;
+    /*if(anima){
+        RAnio += 0;//anio;
         RDia += dia;
         RMes += mes;
-    }   
+    }
+     * */ 
+    if (anima) {
+        Anio++;
+        Dia+=365;
+        Mes+=12;
+    }
     Sleep(10);   
     glutPostRedisplay();  
 }
@@ -548,7 +525,6 @@ void glDrawSphere(char color,float radio, bool luz){
                     glMaterialfv(GL_FRONT, GL_SPECULAR , KsS);
                     glMaterialf (GL_FRONT, GL_SHININESS, 100.0);
                     if(tarea==3){
-                        //GLfloat KaS[] = { 0.8, 0.8, 0.8, 1.0 };
                         glMaterialf (GL_FRONT, GL_SHININESS, 100.0);
                         glBindTexture(GL_TEXTURE_2D, textureName[0]);
                         glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
@@ -644,32 +620,37 @@ void P3Tarea2() {
             glDrawSphere('y',2.0f,true);
         glPopMatrix();
         //Dibujar tierra
-        glRotatef(RAnio,0.0f,1.0f,0.0f);
-        
+        //glRotatef(RAnio,0.0f,1.0f,0.0f);
+        glRotatef(Anio%360,0.0,1.0,0.0);
         glTranslatef(4.0f,0.0f,0.0f);
-        glRotatef(RDia,0.0f,1.0f,0.0f);
+        //glRotatef(RDia,0.0f,1.0f,0.0f);
+        glRotatef(Dia%360,0.0,1.0,0.0);
         glPushMatrix();
             glColor3f(0.0, 0.0, 1.0);
             glRotatef(90,1.0f,0.0f,0.0f);
             glDrawSphere('b',0.5f,false);
         glPopMatrix();
-        glRotatef(-RDia,0.0f,1.0f,0.0f);
+        //glRotatef(-RDia,0.0f,1.0f,0.0f);
+        glRotatef(-Dia%360,0.0,1.0,0.0);
         //Dibujar luna
-        glRotatef(RMes,0.0f,1.0f,0.0f);
+        //glRotatef(RMes,0.0f,1.0f,0.0f);
+        glRotatef(Mes%360,0.0f,1.0f,0.0f);
         glTranslatef(1.5,0.0,0.0);
         glPushMatrix();
             glColor3f(1.0, 1.0, 1.0);
             glRotatef(90,1.0f,0.0f,0.0f);
             glDrawSphere('w',0.1f,true);
         glPopMatrix();
-        lunax = 4.0*cos((anio%360)*PI/180)+1.5*cos((anio%360+mes%360)*PI/180);
-        lunaz = -(4.0*sin((anio%360)*PI/180)+1.5*sin((anio%360+mes%360)*PI/180));
+        //cos el x, sin el z
+        //lunax=1.5*cos(RMes);
+        //lunaz=1.5*sin(RMes);
+        lunax = 4.0*cos((Anio%360)*PI/180)+1.5*cos((Anio%360+Mes%360)*PI/180);
+        lunaz = -(4.0*sin((Anio%360)*PI/180)+1.5*sin((Anio%360+Mes%360)*PI/180));
         //incrementar variables
     glPopMatrix();
     esTarea1=false;
 }
 void P3Tarea3() {
     /*añadir las texturas del Sol, Tierra y Luna*/
-    anima=true;
-    esTarea1=false;
+    P3Tarea2();
 }
