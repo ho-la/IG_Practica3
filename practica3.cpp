@@ -19,7 +19,7 @@ void drawCone();
 void P3Tarea1();
 void P3Tarea2();
 void P3Tarea3();
-int tarea=2;
+
 // Variables globales
 int w = 900;
 int h = 500;
@@ -31,7 +31,8 @@ GLfloat PL0[] = { 0.0f, 0.0f, -10.0f, 1.0f };//ultimo parametro 0=direccionar,1=
 GLfloat PL1[] = {3.0f, 2.0f, -6.0f, 1.0f };
 GLfloat IC[]  = { 1.9f, 1.5f, 1.5f, 1.0f };
 GLfloat IA[]  = {0.2f, 0.2f, 0.2f, 1.0f };
-GLfloat ISol[]  = { 15.0f, 15.0f, 15.0f, 1.0f };
+GLfloat ISol[]  = { 5.0f, 5.0f, 5.0f, 1.0f };
+GLfloat PLS[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat PLT[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat PLL[] = { 0.0, 0.0, 0.0, 1.0 };
 #define NT 3
@@ -67,7 +68,7 @@ bool luna_on = false;
 
 GLboolean anima=true;
 GLboolean esTarea1;
-
+int tarea=3;
 int main(int argc, char** argv) {
     
  // Inicializamos GLUT
@@ -132,7 +133,7 @@ void initFunc() {
     
  // Parámetros de la Luz 1 (posicional=bombilla)
     GLfloat Ia1[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-    GLfloat Id1[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+    //GLfloat Id1[] = { 0.8f, 0.8f, 0.8f, 1.0f };
     GLfloat Is1[] = { 1.0f, 0.0f, 0.0f, 1.0f };
     glLightfv(GL_LIGHT1, GL_AMBIENT , Ia1);
     if(esTarea1){
@@ -173,13 +174,15 @@ void initFunc() {
  // Modelo de Sombreado
     glShadeModel(GL_SMOOTH);
     glEnable(GL_NORMALIZE);
-    /*
+    
  // Texturas
+    glEnable(GL_TEXTURE_2D);
     glGenTextures(NT,textureName);
         
-    const char *filename[NT] = { "common/img/imgChess.bmp",
-                                 "common/img/imgLadrillo.bmp",
-                                 "common/img/imgMarmol.bmp"};
+    const char *filename[NT] = { "common/img/imgSun.bmp",
+                                 "common/img/imgEarth.bmp",
+                                 "common/img/imgMoon.bmp",};
+                                 //"common/img/imgChess.bmp","common/img/imgLadrillo.bmp","common/img/imgMarmol.bmp"};
     
     for(unsigned i=0; i<NT; i++) {
         
@@ -187,10 +190,11 @@ void initFunc() {
 	glBindTexture(GL_TEXTURE_2D, textureName[i]);
 		
      // Cargamos la textura (RgbImage)
-        //RgbImage texture(filename[i]);
-        //gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture.GetNumCols(), texture.GetNumRows(), GL_RGB, GL_UNSIGNED_BYTE, texture.ImageData());
+        RgbImage texture(filename[i]);
+        gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture.GetNumCols(), texture.GetNumRows(), GL_RGB, GL_UNSIGNED_BYTE, texture.ImageData());
     
      // Configuramos la textura
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -198,7 +202,7 @@ void initFunc() {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         
     }
-    */
+    
 }
 
 void destroyFunc() {
@@ -289,16 +293,15 @@ void drawLights2(){
     
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glLightfv(GL_LIGHT1, GL_POSITION, PL0);
-    glDisable(GL_COLOR_MATERIAL);
     
-     glEnable(GL_LIGHT2);
+    glLightfv(GL_LIGHT1, GL_POSITION, PLS);
+    
+    glEnable(GL_LIGHT2);
     if (luna_on)
         glEnable(GL_LIGHT3);
     else
         glDisable(GL_LIGHT3);
     glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     
     glLightfv(GL_LIGHT2, GL_POSITION, PLT);
     PLL[0]=lunax;
@@ -485,15 +488,15 @@ void funKeyboard(int key, int x, int y) {
                     break;
                 case GLUT_KEY_RIGHT:
                     //rotY -= 5.0f;
-                    RAnio-= anio;
-                    RDia -= dia;
-                    RMes -= mes;
+                    Anio++;
+                    Dia+=365;
+                    Mes+=12;
                     break;
                 case GLUT_KEY_LEFT:
                     //rotY += 5.0f;
-                    RAnio+= anio;
-                    RDia += dia;
-                    RMes += mes;
+                    Anio--;
+                    Dia-=365;
+                    Mes-=12;
                     break;
             }
         }    
@@ -513,7 +516,7 @@ void funIdle() {
         Dia+=365;
         Mes+=12;
     }
-    Sleep(10);   
+    Sleep(50);   
     glutPostRedisplay();  
 }
 
