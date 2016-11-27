@@ -5,6 +5,7 @@
 #include "RgbImage.h"
 
 #define PI 3.141592654
+#define NT 3
 
 void initFunc();
 void funReshape(int w, int h);
@@ -35,7 +36,7 @@ GLfloat ISol[]  = { 5.0f, 5.0f, 5.0f, 1.0f };
 GLfloat PLS[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat PLT[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat PLL[] = { 0.0, 0.0, 0.0, 1.0 };
-#define NT 3
+
 GLuint textureName[NT];
 //Mis variables globales
 //Si gira de 6h en 6h
@@ -578,7 +579,6 @@ void glDrawSphere(char color,float radio, bool luz){
                     }
                     break;
     }
-    
 }
 
 void drawCono(){
