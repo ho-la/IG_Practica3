@@ -4,6 +4,8 @@
 #include <math.h>
 #include "RgbImage.h"
 
+#define PI 3.141592654
+
 void initFunc();
 void funReshape(int w, int h);
 void funDisplay();
@@ -26,19 +28,22 @@ int w = 900;
 int h = 500;
 GLfloat rotX = 0.0f;
 GLfloat rotY = 0.0f;
+GLfloat lunax = 5.5, lunay=0,lunaz = 0.0;
 //GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 GLfloat PL0[] = { 0.0f, 0.0f, -10.0f, 1.0f };//ultimo parametro 0=direccionar,1=posicional
 GLfloat PL1[] = {3.0f, 2.0f, -6.0f, 1.0f };
 GLfloat IC[]  = { 1.9f, 1.5f, 1.5f, 1.0f };
 GLfloat IA[]  = {0.2f, 0.2f, 0.2f, 1.0f };
 GLfloat ISol[]  = { 10.0f, 10.0f, 10.0f, 1.0f };
+GLfloat PLT[] = { 0.0, 0.0, 0.0, 1.0 };
+GLfloat PLL[] = { 0.0, 0.0, 0.0, 1.0 };
 #define NT 3
 GLuint textureName[NT];
 //Mis variables globales
 //Si gira de 6h en 6h
-GLfloat anio = (360.0/365.0)/4; //365*24 horas
-GLfloat dia = (360.0/4.0); //24 horas
-GLfloat mes= anio*12;  // Luna gira 12 veces sobre a Tierra en un año
+int anio = (360.0/365.0)/4; //365*24 horas
+int dia = (360.0/4.0); //24 horas
+int mes= anio*12;  // Luna gira 12 veces sobre a Tierra en un año
 GLfloat RAnio = 0.0f;
 GLfloat RDia = 0.0f;
 GLfloat RMes=0.0f;
@@ -56,6 +61,7 @@ GLfloat KsT[] = { 0.9, 0.9, 0.0, 1.0 }; //Brillo Azul
 GLfloat zoom = -10.0f;
 GLfloat giroVertical=0.0f;
 int iniX;
+bool luna_on = false;
 
 GLboolean anima=true;
 GLboolean esTarea1;
@@ -152,7 +158,7 @@ void initFunc() {
     glLightf (GL_LIGHT2, GL_CONSTANT_ATTENUATION , 0.90);
     glLightf (GL_LIGHT2, GL_LINEAR_ATTENUATION   , 0.05);
     glLightf (GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.01);
-    
+    */
      // Parámetros de la Luz Luna (posicional=bombilla)
     GLfloat Ial[] = { 0.1, 0.1, 0.1, 1.0 };
     GLfloat Idl[] = { 1.9, 1.9, 1.9, 1.0 };
@@ -163,7 +169,7 @@ void initFunc() {
     glLightf (GL_LIGHT3, GL_CONSTANT_ATTENUATION , 0.90);
     glLightf (GL_LIGHT3, GL_LINEAR_ATTENUATION   , 0.05);
     glLightf (GL_LIGHT3, GL_QUADRATIC_ATTENUATION, 0.01);
-    */
+    
  // Modelo de Sombreado
     glShadeModel(GL_SMOOTH);
     glEnable(GL_NORMALIZE);
@@ -245,13 +251,10 @@ void funDisplay() {
         glTranslatef(0.0f, 0.0f, -10.0f);
     }
  // Dibujamos la escena(M)
-    switch (tarea){
-        case 1: P3Tarea1();
-            break;
-        case 2: P3Tarea2();
-            break;
-        default: P3Tarea3();
-    }
+    //P3Tarea1();
+    P3Tarea2();
+    //P3Tarea3();
+    
  // Intercambiamos los buffers
     glutSwapBuffers();
     
@@ -284,7 +287,7 @@ void drawLights2(){
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glLightfv(GL_LIGHT1, GL_POSITION, PL0);
     glDisable(GL_COLOR_MATERIAL);
-    /*
+    
      glEnable(GL_LIGHT2);
     if (luna_on)
         glEnable(GL_LIGHT3);
@@ -293,14 +296,14 @@ void drawLights2(){
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     
-    glLightfv(GL_LIGHT2, GL_POSITION, PLS);
+    glLightfv(GL_LIGHT2, GL_POSITION, PLT);
     PLL[0]=lunax;
     PLL[1]=lunay;
     PLL[2]=lunaz;
     glLightfv(GL_LIGHT3, GL_POSITION, PLL);
 
     glDisable(GL_COLOR_MATERIAL);
-    */
+    
 }
 void drawRoom() {
     
@@ -434,7 +437,10 @@ void keyboard(unsigned char key,int x,int y){
                 IA[2]-=0.2;
                 glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
             } 
-            break; 
+            break;
+        case 'e' :
+           luna_on= !luna_on;
+           break;
     }
     glutPostRedisplay();
 }
@@ -656,6 +662,8 @@ void P3Tarea2() {
             glRotatef(90,1.0f,0.0f,0.0f);
             glDrawSphere('w',0.1f,true);
         glPopMatrix();
+        lunax = 4.0*cos((anio%360)*PI/180)+1.5*cos((anio%360+mes%360)*PI/180);
+        lunaz = -(4.0*sin((anio%360)*PI/180)+1.5*sin((anio%360+mes%360)*PI/180));
         //incrementar variables
     glPopMatrix();
     esTarea1=false;
