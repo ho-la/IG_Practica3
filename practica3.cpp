@@ -11,16 +11,16 @@ void funKeyboard(int key, int x, int y);
 void destroyFunc();
 void funIdle();
 void keyboard(unsigned char key,int x,int y);
-/*
+
 void raton (int button, int state, int x, int y);
 void moveMouse(int x,int y);
-*/
+
 void glDrawSphere(char color,float radio,bool luz);
 void drawCone();
 void P3Tarea1();
 void P3Tarea2();
 void P3Tarea3();
-int tarea=1;
+int tarea=2;
 // Variables globales
 int w = 900;
 int h = 500;
@@ -30,19 +30,36 @@ GLfloat rotY = 0.0f;
 GLfloat PL0[] = { 0.0f, 0.0f, -10.0f, 1.0f };//ultimo parametro 0=direccionar,1=posicional
 GLfloat PL1[] = {3.0f, 2.0f, -6.0f, 1.0f };
 GLfloat IC[]  = { 1.9f, 1.5f, 1.5f, 1.0f };
+GLfloat IA[]  = {0.2f, 0.2f, 0.2f, 1.0f };
+GLfloat ISol[]  = { 10.0f, 10.0f, 10.0f, 1.0f };
 #define NT 3
 GLuint textureName[NT];
 //Mis variables globales
-//Si gira de 4h en 4h
-GLfloat anio = (360.0/365.0)/6; //365*24 horas
-GLfloat dia = (360.0/6.0); //24 horas
+//Si gira de 6h en 6h
+GLfloat anio = (360.0/365.0)/4; //365*24 horas
+GLfloat dia = (360.0/4.0); //24 horas
 GLfloat mes= anio*12;  // Luna gira 12 veces sobre a Tierra en un año
 GLfloat RAnio = 0.0f;
 GLfloat RDia = 0.0f;
 GLfloat RMes=0.0f;
 
+GLfloat KaS[] = { 0.1, 0.1, 0.1, 1.0 };
+GLfloat KdS[] = { 0.9, 0.9, 0.2, 1.0 };
+GLfloat KsS[] = { 0.9, 0.9, 0.1, 1.0 };//Brillo amarillo
+GLfloat KaL[] = { 0.1, 0.1, 0.1, 1.0 };
+GLfloat KdL[] = { 0.7, 0.7, 0.7, 1.0 };
+GLfloat KsL[] = { 0.9, 0.9, 0.9, 1.0 }; //Brillo Blanco
+GLfloat KaT[] = { 0.1, 0.1, 0.1, 1.0 };
+GLfloat KdT[] = { 0.2, 0.2, 0.7, 1.0 };
+GLfloat KsT[] = { 0.9, 0.9, 0.0, 1.0 }; //Brillo Azul
+
+GLfloat zoom = -10.0f;
+GLfloat giroVertical=0.0f;
+int iniX;
+
 GLboolean anima=true;
 GLboolean esTarea1;
+
 int main(int argc, char** argv) {
     
  // Inicializamos GLUT
@@ -69,10 +86,8 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(funKeyboard);
     glutIdleFunc(funIdle); 
-    /*
     glutMouseFunc(raton);
     glutMotionFunc(moveMouse);
-    */
       
  // Bucle principal
     glutMainLoop();
@@ -94,18 +109,20 @@ void initFunc() {
         
  // Parámetros de la Luz ambiental global
     //GLfloat IA[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-    GLfloat IA[]  = { 0.2f, 0.2f, 0.2f, 1.0f };
+    //GLfloat IA[]  = { 0.2f, 0.2f, 0.2f, 1.0f };
     //GLfloat IA[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
+    // Cálculo de la iluminación an ambas caras
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
     
  // Parámetros de la Luz 0 (direccional=sol)
-    /*GLfloat Ia0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-    GLfloat Id0[] = { 0.9f, 0.9f, 0.9f, 1.0f };
-    GLfloat Is0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    GLfloat Ia0[] = { 0.1, 0.1, 0.1, 1.0 };
+    GLfloat Id0[] = { 0.5, 0.5, 0.5, 1.0 };
+    GLfloat Is0[] = { 0.3, 0.3, 0.3, 1.0 }; // Brillo en blanco para identificarla mejor
     glLightfv(GL_LIGHT0, GL_AMBIENT , Ia0);
     glLightfv(GL_LIGHT0, GL_DIFFUSE , Id0);
     glLightfv(GL_LIGHT0, GL_SPECULAR, Is0);
-    glEnable(GL_LIGHT0);*/
+    glEnable(GL_LIGHT0);
     
  // Parámetros de la Luz 1 (posicional=bombilla)
     GLfloat Ia1[] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -116,15 +133,37 @@ void initFunc() {
         glLightfv(GL_LIGHT1, GL_DIFFUSE , IC);
     }    
     else{
-        glLightfv(GL_LIGHT1, GL_DIFFUSE , Id1);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE , ISol);
+        Is1[1] = 1.0f; // Brillo en amarillo para identificarla mejor
     }    
     glLightfv(GL_LIGHT1, GL_SPECULAR, Is1);
-   
     glLightf (GL_LIGHT1, GL_CONSTANT_ATTENUATION , 0.90f);
     glLightf (GL_LIGHT1, GL_LINEAR_ATTENUATION   , 0.05f);
     glLightf (GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01f);
     glEnable(GL_LIGHT1);
+    /*
+     // Parámetros de la Luz Sol (posicional=bombilla)
+    GLfloat Ias[] = { 0.1, 0.1, 0.1, 1.0 };
+    GLfloat Ids[] = { 1.9, 1.9, 1.9, 1.0 };
+    GLfloat Iss[] = { 1.0, 1.0, 0.0, 1.0 }; // Brillo en amarillo para identificarla mejor
+    glLightfv(GL_LIGHT2, GL_AMBIENT , Ias);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE , Ids);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, Iss);
+    glLightf (GL_LIGHT2, GL_CONSTANT_ATTENUATION , 0.90);
+    glLightf (GL_LIGHT2, GL_LINEAR_ATTENUATION   , 0.05);
+    glLightf (GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.01);
     
+     // Parámetros de la Luz Luna (posicional=bombilla)
+    GLfloat Ial[] = { 0.1, 0.1, 0.1, 1.0 };
+    GLfloat Idl[] = { 1.9, 1.9, 1.9, 1.0 };
+    GLfloat Isl[] = { 1.0, 1.0, 1.0, 1.0 }; // Brillo en blanco para identificarla mejor
+    glLightfv(GL_LIGHT3, GL_AMBIENT , Ial);
+    glLightfv(GL_LIGHT3, GL_DIFFUSE , Idl);
+    glLightfv(GL_LIGHT3, GL_SPECULAR, Isl);
+    glLightf (GL_LIGHT3, GL_CONSTANT_ATTENUATION , 0.90);
+    glLightf (GL_LIGHT3, GL_LINEAR_ATTENUATION   , 0.05);
+    glLightf (GL_LIGHT3, GL_QUADRATIC_ATTENUATION, 0.01);
+    */
  // Modelo de Sombreado
     glShadeModel(GL_SMOOTH);
     glEnable(GL_NORMALIZE);
@@ -236,6 +275,33 @@ void drawLights1() {
     glDisable(GL_COLOR_MATERIAL);
 }
 
+void drawLights2(){
+    
+    glLightfv(GL_LIGHT1, GL_DIFFUSE , ISol);
+    glEnable(GL_LIGHT1);
+    
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glLightfv(GL_LIGHT1, GL_POSITION, PL0);
+    glDisable(GL_COLOR_MATERIAL);
+    /*
+     glEnable(GL_LIGHT2);
+    if (luna_on)
+        glEnable(GL_LIGHT3);
+    else
+        glDisable(GL_LIGHT3);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    
+    glLightfv(GL_LIGHT2, GL_POSITION, PLS);
+    PLL[0]=lunax;
+    PLL[1]=lunay;
+    PLL[2]=lunaz;
+    glLightfv(GL_LIGHT3, GL_POSITION, PLL);
+
+    glDisable(GL_COLOR_MATERIAL);
+    */
+}
 void drawRoom() {
     
  // Definimos el material de la habitación
@@ -343,15 +409,32 @@ void drawObject(GLfloat s, GLint c) {
 void keyboard(unsigned char key,int x,int y){
     switch(key){
         case '+':
+            if(esTarea1){
                IC[0]+=0.2;
                IC[1]+=0.2;
                IC[2]+=0.2;
-               break;
+            }
+            else{
+               IA[0]+=0.2;
+               IA[1]+=0.2;
+               IA[2]+=0.2;
+               glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
+            }   
+            break;
+               
         case '-' :
-           IC[0]-=0.2;
-           IC[1]-=0.2;
-           IC[2]-=0.2;
-           break; 
+            if(esTarea1){
+                IC[0]-=0.2;
+                IC[1]-=0.2;
+                IC[2]-=0.2;
+            }
+            else{
+                IA[0]-=0.2;
+                IA[1]-=0.2;
+                IA[2]-=0.2;
+                glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
+            } 
+            break; 
     }
     glutPostRedisplay();
 }
@@ -407,35 +490,39 @@ void funKeyboard(int key, int x, int y) {
     }
     glutPostRedisplay();    
 }
-/*
-void funKeyboard(unsigned char key, int x, int y) {
-    
-   switch(key) {
-       
-       case '+' :
-           if (esTarea1){
-               IC[0]+=0.2;
-               IC[1]+=0.2;
-               IC[2]+=0.2;
-           } /*else {
-                IA[0]+=0.1;IA[1]+=0.1;IA[2]+=0.1;
-                glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
-           }
-           break;
-       case '-' :
-           if (esTarea1){
-               IC[0]-=0.2;
-               IC[1]-=0.2;
-               IC[2]-=0.2;
-           } /*else {
-               IA[0]-=0.1;IA[1]-=0.1;IA[2]-=0.1;
-               glLightModelfv(GL_LIGHT_MODEL_AMBIENT, IA);
-           }
-           break;
-   }
-   glutPostRedisplay();
+
+void raton (int button, int state, int x, int y){
+       if(!esTarea1){
+        switch(button){
+            case GLUT_LEFT_BUTTON:
+                //gluLookAt(0,0,1,0,0,-5,0,1,0);
+                if(state == GLUT_DOWN)
+                    iniX=y;
+                /*if(state == GLUT_UP)
+                    giroVertical += (x-iniX)*10;
+                */  
+                    break;
+            //Rueba arriba
+            case 3:
+                if (zoom<-7)
+                    zoom+=1;
+                break;
+            //Rueda abajo    
+            case 4:
+                if (zoom>-17)
+                    zoom-=1;
+                break;
+        }        
+    }
+    glutPostRedisplay();
 }
-*/
+void moveMouse(int x,int y){
+    if(!esTarea1){
+        giroVertical = (GLfloat)(y - iniX);
+    }
+    //angulo =(GLfloat)  -(y-300)/10;
+    glutPostRedisplay();
+}
 
 void funIdle() {
     if(anima){
@@ -448,79 +535,65 @@ void funIdle() {
 }
 
 void glDrawSphere(char color,float radio, bool luz){
-    GLfloat Kd[4];
-    switch(color) {
-        //White
-        case 'w':
-            Kd[0]=1.0f;
-            Kd[1]=1.0f;
-            Kd[2]=1.0f;
-            Kd[3]=1.0f;
-            break;
-        //Yellow    
-        case 'y':
-            Kd[0]=1.0f;
-            Kd[1]=1.0f;
-            Kd[2]=0.0f;
-            Kd[3]=1.0f;
-            break;
-        //Red
-        case 'r':
-            Kd[0]=1.0f;
-            Kd[1]=0.0f;
-            Kd[2]=0.0f;
-            Kd[3]=1.0f;
-            break;
-        //Green
-        case 'g':
-            Kd[0]=0.0f;
-            Kd[1]=1.0f;
-            Kd[2]=0.0f;
-            Kd[3]=1.0f;
-            break;
-        //Blue
-        case 'b':
-            Kd[0]=0.0f;
-            Kd[1]=0.0f;
-            Kd[2]=1.0f;
-            Kd[3]=1.0f;
-            break;
-        //White
-        default:
-            Kd[0]=1.0f;
-            Kd[1]=1.0f;
-            Kd[2]=1.0f;
-            Kd[3]=1.0f;
+    switch(color){
+        case 'y':   
+                    glMaterialfv(GL_FRONT, GL_AMBIENT  , KaS);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE  , KdS);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR , KsS);
+                    glMaterialf (GL_FRONT, GL_SHININESS, 100.0);
+                    if(tarea==3){
+                        //GLfloat KaS[] = { 0.8, 0.8, 0.8, 1.0 };
+                        glMaterialf (GL_FRONT, GL_SHININESS, 100.0);
+                        glBindTexture(GL_TEXTURE_2D, textureName[0]);
+                        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        glEnable(GL_TEXTURE_GEN_S);
+                        glEnable(GL_TEXTURE_GEN_T);
+                    }
+                        glutSolidSphere(2.0,50,50);
+                    if(tarea==3){    
+                        glDisable(GL_TEXTURE_GEN_T);
+                        glDisable(GL_TEXTURE_GEN_S);
+                    }
+                    break;
+        case 'w':  
+                    glMaterialfv(GL_FRONT, GL_AMBIENT  , KaL);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE  , KdL);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR , KsL);
+                    glMaterialf (GL_FRONT, GL_SHININESS, 100.0);
+                    if(tarea==3){
+                        glBindTexture(GL_TEXTURE_2D, textureName[2]);
+                        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        glEnable(GL_TEXTURE_GEN_S);
+                        glEnable(GL_TEXTURE_GEN_T);
+                    }    
+                        glutSolidSphere(0.15,15,15);
+                    if(tarea==3){    
+                        glDisable(GL_TEXTURE_GEN_T);
+                        glDisable(GL_TEXTURE_GEN_S);
+                    }
+                    break;
+        case 'b':   
+                    glMaterialfv(GL_FRONT, GL_AMBIENT  , KaT);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE  , KdT);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR , KsT);
+                    glMaterialf (GL_FRONT, GL_SHININESS, 100.0);
+                    if(tarea==3){
+                        glBindTexture(GL_TEXTURE_2D, textureName[1]);
+                        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        glEnable(GL_TEXTURE_GEN_S);
+                        glEnable(GL_TEXTURE_GEN_T);
+                    } 
+                    glutSolidSphere(0.75,30,30);
+                    if(tarea==3){ 
+                        glDisable(GL_TEXTURE_GEN_T);
+                        glDisable(GL_TEXTURE_GEN_S);
+                    }
+                    break;
     }
     
-    // Definimos el material del objeto
-    GLfloat Ka[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-    GLfloat Ks[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-    //GLfloat Kd[] = { 0.7f, 0.7f, 0.3f, 1.0f };
-    //GLfloat Ks[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-    glMaterialfv(GL_FRONT, GL_AMBIENT  , Ka);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE  , Kd);
-    glMaterialfv(GL_FRONT, GL_SPECULAR , Ks);
-    glMaterialf (GL_FRONT, GL_SHININESS, 50.0f);
-    //Poner luz al objeto
-    if(luz){
-        
-    }
- // Definimos el objeto 
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_TEXTURE_GEN_S);
-    glEnable(GL_TEXTURE_GEN_T);
-    glBindTexture(GL_TEXTURE_2D, textureName[2]);
-    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-    glPushMatrix();
-        glutSolidSphere(radio,20,20); 
-    glPopMatrix();
-    glDisable(GL_TEXTURE_GEN_T);
-    glDisable(GL_TEXTURE_GEN_S);
-    glDisable(GL_TEXTURE_2D);
-    
-    //(GLdouble radius,GLint slices, GLint stacks); (number of lines)
 }
 
 void drawCono(){
@@ -556,10 +629,11 @@ void P3Tarea2() {
         3. Añadir un tono amarillo al Sol, azul a la Tierra y blanco a la Luna.
         4. Transformar la luna en una nueva estrella haciendo que se encienda y apague con la tecla E.
         */
-    //drawRoom();
+    drawLights2();
     glPushMatrix();
         //Dibujar sol
         glPushMatrix();
+            //glColor3f(1.0, 1.0, 0.0);
             glRotatef(90,1.0f,0.0f,0.0f);
             glDrawSphere('y',2.0f,true);
         glPopMatrix();
@@ -569,6 +643,7 @@ void P3Tarea2() {
         glTranslatef(4.0f,0.0f,0.0f);
         glRotatef(RDia,0.0f,1.0f,0.0f);
         glPushMatrix();
+            glColor3f(0.0, 0.0, 1.0);
             glRotatef(90,1.0f,0.0f,0.0f);
             glDrawSphere('b',0.5f,false);
         glPopMatrix();
@@ -577,6 +652,7 @@ void P3Tarea2() {
         glRotatef(RMes,0.0f,1.0f,0.0f);
         glTranslatef(1.5,0.0,0.0);
         glPushMatrix();
+            glColor3f(1.0, 1.0, 1.0);
             glRotatef(90,1.0f,0.0f,0.0f);
             glDrawSphere('w',0.1f,true);
         glPopMatrix();
