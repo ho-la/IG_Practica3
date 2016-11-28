@@ -29,7 +29,7 @@ GLfloat rotY = 0.0f;
 GLfloat lunax = 5.5, lunay=0,lunaz = 0.0;
 //GLfloat PL0[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 GLfloat PL0[] = { 0.0f, 0.0f, -10.0f, 1.0f };//ultimo parametro 0=direccionar,1=posicional
-GLfloat PL1[] = {3.0f, 2.0f, -6.0f, 1.0f };
+GLfloat PL1[] = {3.0f, 2.0f, -6.0f, 1.0f };//Posicion de la luz de la vela
 GLfloat IC[]  = { 1.9f, 1.5f, 1.5f, 1.0f };
 GLfloat IA[]  = {0.2f, 0.2f, 0.2f, 1.0f };
 GLfloat ISol[]  = { 5.0f, 5.0f, 5.0f, 1.0f };
@@ -69,7 +69,7 @@ bool luna_on = false;
 
 GLboolean anima=true;
 GLboolean esTarea1;
-int tarea=3;
+int tarea=1;
 int main(int argc, char** argv) {
     
  // Inicializamos GLUT
@@ -149,18 +149,7 @@ void initFunc() {
     glLightf (GL_LIGHT1, GL_LINEAR_ATTENUATION   , 0.05f);
     glLightf (GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01f);
     glEnable(GL_LIGHT1);
-    /*
-     // Parámetros de la Luz Sol (posicional=bombilla)
-    GLfloat Ias[] = { 0.1, 0.1, 0.1, 1.0 };
-    GLfloat Ids[] = { 1.9, 1.9, 1.9, 1.0 };
-    GLfloat Iss[] = { 1.0, 1.0, 0.0, 1.0 }; // Brillo en amarillo para identificarla mejor
-    glLightfv(GL_LIGHT2, GL_AMBIENT , Ias);
-    glLightfv(GL_LIGHT2, GL_DIFFUSE , Ids);
-    glLightfv(GL_LIGHT2, GL_SPECULAR, Iss);
-    glLightf (GL_LIGHT2, GL_CONSTANT_ATTENUATION , 0.90);
-    glLightf (GL_LIGHT2, GL_LINEAR_ATTENUATION   , 0.05);
-    glLightf (GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.01);
-    */
+    
      // Parámetros de la Luz Luna (posicional=bombilla)
     GLfloat Ial[] = { 0.1, 0.1, 0.1, 1.0 };
     GLfloat Idl[] = { 1.9, 1.9, 1.9, 1.0 };
@@ -179,12 +168,17 @@ void initFunc() {
  // Texturas
     glEnable(GL_TEXTURE_2D);
     glGenTextures(NT,textureName);
-        
-    const char *filename[NT] = { "common/img/imgSun.bmp",
-                                 "common/img/imgEarth.bmp",
-                                 "common/img/imgMoon.bmp",};
-                                 //"common/img/imgChess.bmp","common/img/imgLadrillo.bmp","common/img/imgMarmol.bmp"};
-    
+    const char *filename[NT];
+    if(tarea==1){
+        filename[0] = "common/img/imgChess.bmp";
+        filename[1] = "common/img/imgLadrillo.bmp";
+        filename[2] = "common/img/imgMarmol.bmp";
+    } 
+    else{
+        filename[0] = "common/img/imgSun.bmp";
+        filename[1] = "common/img/imgEarth.bmp";
+        filename[2] = "common/img/imgMoon.bmp";
+    }
     for(unsigned i=0; i<NT; i++) {
         
      // Seleccionamos la textura a configurar
@@ -409,7 +403,8 @@ void drawObject(GLfloat s, GLint c) {
         glTranslatef(0.0f, 1.0f, -5.0f);
         glRotatef(rotX, 1.0f, 0.0f, 0.0f);
         glRotatef(rotY, 0.0f, 1.0f, 0.0f);
-        glutSolidTeapot(s);
+        //glutSolidTeapot(s);
+        glutSolidSphere(1.0,200,200);
     glPopMatrix();
     glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_GEN_S);
